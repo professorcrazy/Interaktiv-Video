@@ -1,0 +1,61 @@
+{
+    "videoNodes": [
+        {
+            "x": 141.0,
+            "y": 49.0,
+            "width": 220.0,
+            "height": 140.0,
+            "title": "Video Node",
+            "videoClipPath": "Assets/Resources/4753951-uhd_4096_2160_25fps.mp4",
+            "progress": 1.0,
+            "optionChildIndices": [
+                0,
+                1
+            ]
+        },
+        {
+            "x": 445.0,
+            "y": 419.0,
+            "width": 220.0,
+            "height": 140.0,
+            "title": "Video Node",
+            "videoClipPath": "Assets/Resources/6766140-uhd_2560_1440_25fps.mp4",
+            "progress": 1.0,
+            "optionChildIndices": []
+        },
+        {
+            "x": 90.0,
+            "y": 429.0,
+            "width": 220.0,
+            "height": 140.0,
+            "title": "Video Node",
+            "videoClipPath": "Assets/Resources/4761709-uhd_4096_2160_25fps.mp4",
+            "progress": 1.0,
+            "optionChildIndices": []
+        }
+    ],
+    "optionNodes": [
+        {
+            "x": 379.0,
+            "y": 288.0,
+            "width": 150.0,
+            "height": 70.0,
+            "title": "Option Node",
+            "choicePrompt": "",
+            "parentVideoIndex": 0,
+            "childVideoIndex": 1,
+            "isSelected": false
+        },
+        {
+            "x": 117.0,
+            "y": 278.0,
+            "width": 150.0,
+            "height": 70.0,
+            "title": "Option Node",
+            "choicePrompt": "",
+            "parentVideoIndex": 0,
+            "childVideoIndex": 2,
+            "isSelected": false
+        }
+    ]
+}
