@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Video;
-/*
+
 [System.Serializable]
 public class VideoNodeData
 {
@@ -23,12 +23,8 @@ public class OptionNodeData
     public int childVideoIndex; // -1 if none.
 }
 
-/// <summary>
-/// Attach this component to a GameObject in your scene to store your interactive video graph.
-/// </summary>
 public class InteractiveVideoTree : MonoBehaviour
 {
     public List<VideoNodeData> videoNodes = new List<VideoNodeData>();
     public List<OptionNodeData> optionNodes = new List<OptionNodeData>();
 }
-*/

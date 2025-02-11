@@ -6,23 +6,25 @@ using System.IO;
 
 public class InteractiveVideoEditorWindow : EditorWindow
 {
-    // Global lists for nodes.
+    // In‑memory representations of nodes.
     public List<VideoNode> videoNodes = new List<VideoNode>();
     public List<OptionNode> optionNodes = new List<OptionNode>();
 
     // Pan offset for the canvas.
     public Vector2 panOffset = Vector2.zero;
 
-    // Variables for node dragging.
+    // For node dragging.
     private VideoNode selectedVideoNode = null;
     private OptionNode selectedOptionNode = null;
     private bool isDraggingNode = false;
     private Vector2 dragOffset;
 
     // Field for pending connection mode.
-    private OptionNode pendingConnectionOption = null;
+    public OptionNode pendingConnectionOption = null;
 
-    // Static instance for easy access.
+    // The currently selected InteractiveVideoTree component.
+    private InteractiveVideoTree currentTree = null;
+
     public static InteractiveVideoEditorWindow Instance;
 
     [MenuItem("Window/Interactive Video Editor")]
@@ -30,59 +32,75 @@ public class InteractiveVideoEditorWindow : EditorWindow
         Instance = GetWindow<InteractiveVideoEditorWindow>("Interactive Video Editor");
     }
 
-    private void OnEnable() {
+    void OnEnable() {
         Instance = this;
+        UpdateCurrentTree();
+    }
+
+    void OnSelectionChange() {
+        UpdateCurrentTree();
+        Repaint();
+    }
+
+    // If the selected GameObject has an InteractiveVideoTree component, load its data.
+    void UpdateCurrentTree() {
+        GameObject go = Selection.activeGameObject;
+        if (go != null) {
+            InteractiveVideoTree tree = go.GetComponent<InteractiveVideoTree>();
+            if (tree != null) {
+                currentTree = tree;
+                LoadTreeFromComponent();
+                return;
+            }
+        }
+        currentTree = null;
+        videoNodes.Clear();
+        optionNodes.Clear();
     }
 
     private void OnGUI() {
-        // Draw grid background.
+        // If no InteractiveVideoTree is selected, show a message.
+        if (currentTree == null) {
+            EditorGUILayout.LabelField("Select a GameObject with an InteractiveVideoTree component in the scene.");
+            return;
+        }
+
         DrawGrid(20, 0.2f, Color.gray);
 
-        // Toolbar with Save, Load, and Clear buttons.
+        // Toolbar: "Save to GameObject" writes the current editor tree back into the component.
         GUILayout.BeginHorizontal(EditorStyles.toolbar);
-        if (GUILayout.Button("Save Tree", EditorStyles.toolbarButton)) {
-            SaveTree();
-        }
-        if (GUILayout.Button("Load Tree", EditorStyles.toolbarButton)) {
-            LoadTree();
+        if (GUILayout.Button("Save to GameObject", EditorStyles.toolbarButton)) {
+            SaveTreeToComponent();
         }
         if (GUILayout.Button("Clear Tree", EditorStyles.toolbarButton)) {
             if (EditorUtility.DisplayDialog("Clear Tree", "Are you sure you want to clear the tree?", "Yes", "No")) {
                 videoNodes.Clear();
                 optionNodes.Clear();
+                SaveTreeToComponent();
             }
         }
         GUILayout.EndHorizontal();
 
-        // Use a large canvas so that nodes outside the current window are rendered.
+        // Use a large canvas so that nodes outside the window are rendered.
         Rect canvasRect = new Rect(panOffset.x, panOffset.y, 5000, 5000);
         GUI.BeginGroup(canvasRect);
-
-        // Draw connection lines behind nodes.
         DrawConnections();
-
-        // Draw all nodes.
         DrawNodes();
-
         GUI.EndGroup();
 
-        // Process events (panning, dragging, context menus, pending connection, etc.).
         ProcessEvents(Event.current);
 
         if (GUI.changed)
             Repaint();
     }
 
-    #region Grid Drawing
-    private void DrawGrid(float gridSpacing, float gridOpacity, Color gridColor) {
+    #region Grid & Node Drawing
+    void DrawGrid(float gridSpacing, float gridOpacity, Color gridColor) {
         int widthDivs = Mathf.CeilToInt(position.width / gridSpacing);
         int heightDivs = Mathf.CeilToInt(position.height / gridSpacing);
-
         Handles.BeginGUI();
         Handles.color = new Color(gridColor.r, gridColor.g, gridColor.b, gridOpacity);
-
         Vector3 newOffset = new Vector3(panOffset.x % gridSpacing, panOffset.y % gridSpacing, 0);
-
         for (int i = 0; i < widthDivs; i++) {
             Vector3 start = new Vector3(gridSpacing * i, 0, 0) + newOffset;
             Vector3 end = new Vector3(gridSpacing * i, position.height, 0) + newOffset;
@@ -96,9 +114,7 @@ public class InteractiveVideoEditorWindow : EditorWindow
         Handles.color = Color.white;
         Handles.EndGUI();
     }
-    #endregion
 
-    #region Node Drawing & Connections
     void DrawNodes() {
         foreach (var v in videoNodes)
             v.Draw();
@@ -107,16 +123,13 @@ public class InteractiveVideoEditorWindow : EditorWindow
     }
 
     void DrawConnections() {
-        // Draw vertical lines from each Video Node to its Option Node children.
         foreach (var v in videoNodes) {
             foreach (var o in v.optionChildren) {
-                // Connection from bottom center of Video Node to top center of Option Node.
                 Vector3 start = new Vector3(v.rect.center.x, v.rect.yMax, 0);
                 Vector3 end = new Vector3(o.rect.center.x, o.rect.y, 0);
                 Handles.DrawLine(start, end);
             }
         }
-        // Draw vertical lines from each Option Node to its child Video Node.
         foreach (var o in optionNodes) {
             if (o.childVideo != null) {
                 Vector3 start = new Vector3(o.rect.center.x, o.rect.yMax, 0);
@@ -129,8 +142,7 @@ public class InteractiveVideoEditorWindow : EditorWindow
 
     #region Event Processing & Context Menus
     void ProcessEvents(Event e) {
-        // --- Pending Connection Mode ---
-        // If we're waiting for a left-click to connect a Video Node.
+        // Pending connection mode: if active, then on left‑click try to connect.
         if (pendingConnectionOption != null && e.type == EventType.MouseDown && e.button == 0) {
             Vector2 adjustedMousePos = e.mousePosition - panOffset;
             VideoNode target = GetVideoNodeAtPoint(adjustedMousePos);
@@ -146,31 +158,24 @@ public class InteractiveVideoEditorWindow : EditorWindow
             return;
         }
 
-        // --- Panning the Canvas ---
+        // Panning with middle mouse.
         if (e.button == 2 && (e.type == EventType.MouseDrag || e.type == EventType.MouseDown)) {
             panOffset += e.delta;
             e.Use();
         }
 
-        // Adjust mouse position for panOffset.
         Vector2 adjustedPos = e.mousePosition - panOffset;
-
-        // --- Context Menus ---
         if (e.type == EventType.ContextClick) {
             VideoNode vNode = GetVideoNodeAtPoint(adjustedPos);
             OptionNode oNode = GetOptionNodeAtPoint(adjustedPos);
-            if (vNode != null) {
+            if (vNode != null)
                 ShowVideoNodeContextMenu(adjustedPos, vNode);
-            }
-            else if (oNode != null) {
+            else if (oNode != null)
                 ShowOptionNodeContextMenu(adjustedPos, oNode);
-            }
-            else {
+            else
                 ShowGlobalContextMenu(adjustedPos);
-            }
             e.Use();
         }
-
         ProcessNodeDragging(e, adjustedPos);
     }
 
@@ -232,7 +237,7 @@ public class InteractiveVideoEditorWindow : EditorWindow
         menu.AddItem(new GUIContent("Add Option Child"), false, () => AddOptionChild(vNode));
         menu.AddSeparator("");
         menu.AddItem(new GUIContent("Delete Video Node"), false, () => DeleteVideoNode(vNode));
-        // Allow connecting an existing Option Node (with no parent) to this Video Node.
+        // Allow connecting an existing Option Node (that has no parent) to this Video Node.
         menu.AddItem(new GUIContent("Connect Existing Option Node"), false, () => {
             GenericMenu connectMenu = new GenericMenu();
             foreach (var option in optionNodes) {
@@ -253,8 +258,6 @@ public class InteractiveVideoEditorWindow : EditorWindow
         menu.AddItem(new GUIContent("Add Child Video Node"), false, () => AddChildVideoNode(oNode));
         menu.AddSeparator("");
         menu.AddItem(new GUIContent("Delete Option Node"), false, () => DeleteOptionNode(oNode));
-
-        // Only offer pending connection if no child is connected.
         if (oNode.childVideo == null) {
             menu.AddItem(new GUIContent("Connect Existing Video Node"), false, () => {
                 pendingConnectionOption = oNode;
@@ -265,13 +268,13 @@ public class InteractiveVideoEditorWindow : EditorWindow
     }
     #endregion
 
-    #region Node Creation Methods
+    #region Node Creation & Deletion
     void AddVideoNode(Vector2 pos) {
         VideoNode newVideo = new VideoNode(pos, 220, 140);
         videoNodes.Add(newVideo);
     }
 
-    // Option Node now created with size (250, 150)
+    // Option nodes are created with size (250, 150).
     void AddOptionChild(VideoNode parent) {
         Vector2 pos = parent.rect.position + new Vector2(0, parent.rect.height + 50);
         OptionNode newOption = new OptionNode(pos, 250, 150);
@@ -286,11 +289,8 @@ public class InteractiveVideoEditorWindow : EditorWindow
         option.childVideo = newVideo;
         videoNodes.Add(newVideo);
     }
-    #endregion
 
-    #region Deletion Methods
     public void DeleteVideoNode(VideoNode node) {
-        // Remove any OptionNode references that use this node.
         foreach (OptionNode o in optionNodes) {
             if (o.childVideo == node)
                 o.childVideo = null;
@@ -301,154 +301,102 @@ public class InteractiveVideoEditorWindow : EditorWindow
     }
 
     public void DeleteOptionNode(OptionNode node) {
-        if (node.parentVideo != null) {
+        if (node.parentVideo != null)
             node.parentVideo.optionChildren.Remove(node);
-        }
-        if (node.childVideo != null) {
+        if (node.childVideo != null)
             node.childVideo = null;
-        }
         optionNodes.Remove(node);
     }
     #endregion
 
-    #region Saving and Loading
-    [System.Serializable]
-    public class VideoTreeData
-    {
-        public List<VideoNodeData> videoNodes = new List<VideoNodeData>();
-        public List<OptionNodeData> optionNodes = new List<OptionNodeData>();
+    #region Component Linking (Scene Data)
+    void LoadTreeFromComponent() {
+        if (currentTree == null)
+            return;
+
+        videoNodes.Clear();
+        optionNodes.Clear();
+
+        // Create VideoNode instances.
+        for (int i = 0; i < currentTree.videoNodes.Count; i++) {
+            VideoNodeData data = currentTree.videoNodes[i];
+            VideoNode node = new VideoNode(new Vector2(data.x, data.y), data.width, data.height);
+            node.title = data.title;
+            node.videoClip = data.videoClip;
+            node.progress = data.progress;
+            videoNodes.Add(node);
+        }
+        // Create OptionNode instances.
+        for (int i = 0; i < currentTree.optionNodes.Count; i++) {
+            OptionNodeData data = currentTree.optionNodes[i];
+            OptionNode node = new OptionNode(new Vector2(data.x, data.y), data.width, data.height);
+            node.title = data.title;
+            node.choicePrompt = data.choicePrompt;
+            node.isSelected = data.isSelected;
+            optionNodes.Add(node);
+        }
+        // Re-link relationships.
+        for (int i = 0; i < currentTree.optionNodes.Count; i++) {
+            OptionNodeData data = currentTree.optionNodes[i];
+            OptionNode option = optionNodes[i];
+            if (data.parentVideoIndex >= 0 && data.parentVideoIndex < videoNodes.Count) {
+                option.parentVideo = videoNodes[data.parentVideoIndex];
+                videoNodes[data.parentVideoIndex].optionChildren.Add(option);
+            }
+            if (data.childVideoIndex >= 0 && data.childVideoIndex < videoNodes.Count) {
+                option.childVideo = videoNodes[data.childVideoIndex];
+            }
+        }
     }
 
-    [System.Serializable]
-    public class VideoNodeData
-    {
-        public float x, y, width, height;
-        public string title;
-        public string videoClipPath;
-        public float progress;
-        public List<int> optionChildIndices = new List<int>();
-    }
+    void SaveTreeToComponent() {
+        if (currentTree == null)
+            return;
 
-    [System.Serializable]
-    public class OptionNodeData
-    {
-        public float x, y, width, height;
-        public string title;
-        public string choicePrompt;
-        public int parentVideoIndex;
-        public int childVideoIndex;
-        public bool isSelected;
-    }
+        currentTree.videoNodes.Clear();
+        currentTree.optionNodes.Clear();
 
-    void SaveTree() {
-        VideoTreeData treeData = new VideoTreeData();
-
+        // Save VideoNodes.
         for (int i = 0; i < videoNodes.Count; i++) {
-            VideoNode v = videoNodes[i];
-            VideoNodeData vData = new VideoNodeData();
-            vData.x = v.rect.x;
-            vData.y = v.rect.y;
-            vData.width = v.rect.width;
-            vData.height = v.rect.height;
-            vData.title = v.title;
-            vData.progress = v.progress;
-            if (v.videoClip != null)
-                vData.videoClipPath = GetRelativePath(v.videoClip);
-            else
-                vData.videoClipPath = "";
-            foreach (OptionNode child in v.optionChildren) {
-                int index = optionNodes.IndexOf(child);
+            VideoNode node = videoNodes[i];
+            VideoNodeData data = new VideoNodeData();
+            data.x = node.rect.x;
+            data.y = node.rect.y;
+            data.width = node.rect.width;
+            data.height = node.rect.height;
+            data.title = node.title;
+            data.videoClip = node.videoClip;
+            data.progress = node.progress;
+            data.optionChildIndices = new List<int>();
+            for (int j = 0; j < node.optionChildren.Count; j++) {
+                int index = optionNodes.IndexOf(node.optionChildren[j]);
                 if (index >= 0)
-                    vData.optionChildIndices.Add(index);
+                    data.optionChildIndices.Add(index);
             }
-            treeData.videoNodes.Add(vData);
+            currentTree.videoNodes.Add(data);
         }
-
+        // Save OptionNodes.
         for (int i = 0; i < optionNodes.Count; i++) {
-            OptionNode o = optionNodes[i];
-            OptionNodeData oData = new OptionNodeData();
-            oData.x = o.rect.x;
-            oData.y = o.rect.y;
-            oData.width = o.rect.width;
-            oData.height = o.rect.height;
-            oData.title = o.title;
-            oData.choicePrompt = o.choicePrompt;
-            oData.isSelected = o.isSelected;
-            oData.parentVideoIndex = videoNodes.IndexOf(o.parentVideo);
-            oData.childVideoIndex = o.childVideo != null ? videoNodes.IndexOf(o.childVideo) : -1;
-            treeData.optionNodes.Add(oData);
-        }
-
-        string json = JsonUtility.ToJson(treeData, true);
-        string path = EditorUtility.SaveFilePanel("Save Video Tree", "", "VideoTree.json", "json");
-        if (!string.IsNullOrEmpty(path)) {
-            File.WriteAllText(path, json);
-            EditorUtility.DisplayDialog("Save Tree", "Tree saved successfully!", "OK");
-        }
-    }
-
-    string GetRelativePath(VideoClip clip) {
-        string fullPath = AssetDatabase.GetAssetPath(clip);
-        string resourcesPrefix = "Assets/Resources/";
-        if (fullPath.StartsWith(resourcesPrefix)) {
-            string relativePath = fullPath.Substring(resourcesPrefix.Length);
-            int extensionIndex = relativePath.LastIndexOf('.');
-            if (extensionIndex >= 0)
-                relativePath = relativePath.Substring(0, extensionIndex);
-            return relativePath;
-        }
-        return "";
-    }
-
-    void LoadTree() {
-        string path = EditorUtility.OpenFilePanel("Load Video Tree", "", "json");
-        if (!string.IsNullOrEmpty(path)) {
-            string json = File.ReadAllText(path);
-            VideoTreeData treeData = JsonUtility.FromJson<VideoTreeData>(json);
-
-            videoNodes.Clear();
-            optionNodes.Clear();
-
-            for (int i = 0; i < treeData.videoNodes.Count; i++) {
-                VideoNodeData vData = treeData.videoNodes[i];
-                VideoNode vNode = new VideoNode(new Vector2(vData.x, vData.y), vData.width, vData.height);
-                vNode.title = vData.title;
-                vNode.progress = vData.progress;
-                if (!string.IsNullOrEmpty(vData.videoClipPath))
-                    vNode.videoClip = AssetDatabase.LoadAssetAtPath<VideoClip>("Assets/Resources/" + vData.videoClipPath + ".mp4");
-                videoNodes.Add(vNode);
-            }
-
-            for (int i = 0; i < treeData.optionNodes.Count; i++) {
-                OptionNodeData oData = treeData.optionNodes[i];
-                OptionNode oNode = new OptionNode(new Vector2(oData.x, oData.y), oData.width, oData.height);
-                oNode.title = oData.title;
-                oNode.choicePrompt = oData.choicePrompt;
-                oNode.isSelected = oData.isSelected;
-                optionNodes.Add(oNode);
-            }
-
-            for (int i = 0; i < treeData.optionNodes.Count; i++) {
-                OptionNodeData oData = treeData.optionNodes[i];
-                OptionNode oNode = optionNodes[i];
-                if (oData.parentVideoIndex >= 0 && oData.parentVideoIndex < videoNodes.Count) {
-                    oNode.parentVideo = videoNodes[oData.parentVideoIndex];
-                    videoNodes[oData.parentVideoIndex].optionChildren.Add(oNode);
-                }
-                if (oData.childVideoIndex >= 0 && oData.childVideoIndex < videoNodes.Count) {
-                    oNode.childVideo = videoNodes[oData.childVideoIndex];
-                }
-            }
-
-            EditorUtility.DisplayDialog("Load Tree", "Tree loaded successfully!", "OK");
+            OptionNode node = optionNodes[i];
+            OptionNodeData data = new OptionNodeData();
+            data.x = node.rect.x;
+            data.y = node.rect.y;
+            data.width = node.rect.width;
+            data.height = node.rect.height;
+            data.title = node.title;
+            data.choicePrompt = node.choicePrompt;
+            data.isSelected = node.isSelected;
+            data.parentVideoIndex = videoNodes.IndexOf(node.parentVideo);
+            data.childVideoIndex = node.childVideo != null ? videoNodes.IndexOf(node.childVideo) : -1;
+            currentTree.optionNodes.Add(data);
         }
     }
     #endregion
 }
 
-/// <summary>
-/// Base class for Video and Option nodes.
-/// </summary>
+#region Node Classes
+
+[System.Serializable]
 public abstract class BaseNode
 {
     public Rect rect;
@@ -462,9 +410,7 @@ public abstract class BaseNode
     public abstract void Draw();
 }
 
-/// <summary>
-/// VideoNode holds a VideoClip, a simulated progress slider, and a list of child OptionNodes.
-/// </summary>
+[System.Serializable]
 public class VideoNode : BaseNode
 {
     public VideoClip videoClip;
@@ -476,13 +422,10 @@ public class VideoNode : BaseNode
 
     public override void Draw() {
         GUI.Box(rect, title);
-
         Rect clipRect = new Rect(rect.x + 10, rect.y + 20, rect.width - 20, 20);
         videoClip = (VideoClip)EditorGUI.ObjectField(clipRect, videoClip, typeof(VideoClip), false);
-
         Rect sliderRect = new Rect(rect.x + 10, rect.y + 45, rect.width - 20, 20);
         progress = EditorGUI.Slider(sliderRect, "Progress", progress, 0f, 1f);
-
         if (progress >= 0.8f) {
             Rect labelRect = new Rect(rect.x + 10, rect.y + 70, rect.width - 20, 20);
             GUI.Label(labelRect, "Options appear at runtime");
@@ -490,10 +433,7 @@ public class VideoNode : BaseNode
     }
 }
 
-/// <summary>
-/// OptionNode represents a choice. It holds a reference to its parent VideoNode,
-/// an optional child VideoNode (the next video), and an editable text prompt for the choice.
-/// </summary>
+[System.Serializable]
 public class OptionNode : BaseNode
 {
     public VideoNode parentVideo;
@@ -506,28 +446,23 @@ public class OptionNode : BaseNode
 
     public override void Draw() {
         GUI.Box(rect, title);
-
         Rect parentRect = new Rect(rect.x + 10, rect.y + 20, rect.width - 20, 20);
         GUI.Label(parentRect, (parentVideo != null ? "Parent: " + parentVideo.title : "No Parent"));
-
         Rect childRect = new Rect(rect.x + 10, rect.y + 40, rect.width - 20, 20);
         GUI.Label(childRect, (childVideo != null ? "Child: " + childVideo.title : "No Child"));
-
-        // If no child Video Node is connected, show a button to trigger pending connection.
         if (childVideo == null) {
             Rect connectRect = new Rect(rect.x + 10, rect.y + 65, rect.width - 20, 20);
             if (GUI.Button(connectRect, "Connect Video Node")) {
-                //pendingConnectionOption = this;
+                InteractiveVideoEditorWindow.Instance.pendingConnectionOption = this;
                 Debug.Log("Pending connection: Click on a Video Node to connect to.");
             }
-            // Draw the text prompt field below the connect button.
             Rect promptRect = new Rect(rect.x + 10, rect.y + 90, rect.width - 20, 20);
             choicePrompt = EditorGUI.TextField(promptRect, "Prompt", choicePrompt);
         }
         else {
-            // If already connected, simply draw the text prompt field at y = 65.
             Rect promptRect = new Rect(rect.x + 10, rect.y + 65, rect.width - 20, 20);
             choicePrompt = EditorGUI.TextField(promptRect, "Prompt", choicePrompt);
         }
     }
 }
+#endregion

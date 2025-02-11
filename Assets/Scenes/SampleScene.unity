@@ -307,7 +307,7 @@ GameObject:
   - component: {fileID: 463077112}
   - component: {fileID: 463077111}
   m_Layer: 0
-  m_Name: GameObject (1)
+  m_Name: StorySystem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -325,8 +325,59 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc256b5260597014eada827b6705e3c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  videoNodes: []
-  optionNodes: []
+  videoNodes:
+  - x: 488
+    y: 215
+    width: 220
+    height: 140
+    title: Video Node
+    videoClip: {fileID: 32900000, guid: 2c185cf4df0489246873f66a99f589db, type: 3}
+    progress: 1
+    optionChildIndices: 0000000001000000
+  - x: 412
+    y: 613
+    width: 220
+    height: 140
+    title: Video Node
+    videoClip: {fileID: 32900000, guid: 73e6b3220e8e28e4cb1a5b8f79684506, type: 3}
+    progress: 0
+    optionChildIndices: 
+  - x: 690
+    y: 613
+    width: 220
+    height: 140
+    title: Video Node
+    videoClip: {fileID: 32900000, guid: e881101052d84264aafc12e1b0288ca2, type: 3}
+    progress: 0
+    optionChildIndices: 02000000
+  optionNodes:
+  - x: 412
+    y: 413
+    width: 250
+    height: 150
+    title: Option Node
+    choicePrompt: Fight
+    isSelected: 0
+    parentVideoIndex: 0
+    childVideoIndex: 1
+  - x: 690
+    y: 413
+    width: 250
+    height: 150
+    title: Option Node
+    choicePrompt: Train
+    isSelected: 0
+    parentVideoIndex: 0
+    childVideoIndex: 2
+  - x: 690
+    y: 803
+    width: 250
+    height: 150
+    title: Option Node
+    choicePrompt: Fight
+    isSelected: 0
+    parentVideoIndex: 2
+    childVideoIndex: 1
 --- !u!4 &463077112
 Transform:
   m_ObjectHideFlags: 0
@@ -1503,7 +1554,7 @@ GameObject:
   - component: {fileID: 2027279380}
   - component: {fileID: 2027279381}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: InteractiveVideoManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1540,7 +1591,7 @@ MonoBehaviour:
   optionsPanel: {fileID: 424910641}
   optionsContainer: {fileID: 424910642}
   optionButtonPrefab: {fileID: 5162641579896719955, guid: 30786129c1dc9ff42b189b3273ed236d, type: 3}
-  graphJson: {fileID: 0}
+  videoTree: {fileID: 463077111}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
