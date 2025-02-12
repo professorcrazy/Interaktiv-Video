@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using UnityEngine.Video;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 
 public class InteractiveVideoManager : MonoBehaviour
 {
@@ -16,6 +17,8 @@ public class InteractiveVideoManager : MonoBehaviour
     public Transform optionsContainer;
     [Tooltip("A prefab for the option button (should have a Button component and a child Text).")]
     public Button optionButtonPrefab;
+    [Tooltip("A panel for the end of the story options")]
+    public GameObject storyFinishedPanel;
 
     [Header("Tree Data")]
     [Tooltip("The InteractiveVideoTree component from your scene that stores your graph.")]
@@ -27,6 +30,9 @@ public class InteractiveVideoManager : MonoBehaviour
     private bool optionsEnabled = false;
 
     void Start() {
+        if(storyFinishedPanel != null) {
+            storyFinishedPanel.SetActive(false);
+        }
         if (videoTree == null) {
             Debug.LogError("InteractiveVideoManager: No InteractiveVideoTree component assigned!");
             return;
@@ -35,6 +41,8 @@ public class InteractiveVideoManager : MonoBehaviour
             Debug.LogError("InteractiveVideoManager: The InteractiveVideoTree has no video nodes!");
             return;
         }
+    }
+    public void StartVideo() {
         if (optionsPanel != null)
             optionsPanel.SetActive(false);
         PlayVideo(currentVideoIndex);
@@ -70,7 +78,7 @@ public class InteractiveVideoManager : MonoBehaviour
         optionsShown = false;
         optionsEnabled = false;
         if (optionsPanel != null)
-            optionsPanel.SetActive(false);
+            optionsPanel.GetComponent<OptionController>()?.Disablepanel();//SetActive(false);
     }
 
     void ShowOptions() {
@@ -80,7 +88,7 @@ public class InteractiveVideoManager : MonoBehaviour
         VideoNodeData videoData = videoTree.videoNodes[currentVideoIndex];
         if (videoData.optionChildIndices == null || videoData.optionChildIndices.Count == 0) {
             Debug.Log("InteractiveVideoManager: No options available for video node: " + videoData.title);
-            Debug.Log("Implement end of movie or branch options");
+            StoryEnded();
             return;
         }
         foreach (int optionIndex in videoData.optionChildIndices) {
@@ -95,7 +103,7 @@ public class InteractiveVideoManager : MonoBehaviour
             btn.onClick.AddListener(() => { OnOptionSelected(optionData); });
         }
         if (optionsPanel != null)
-            optionsPanel.SetActive(true);
+            optionsPanel.GetComponent<OptionController>()?.EnablePanel();//SetActive(true);
     }
 
     void EnableOptionButtons() {
@@ -114,4 +122,12 @@ public class InteractiveVideoManager : MonoBehaviour
         currentVideoIndex = optionData.childVideoIndex;
         PlayVideo(currentVideoIndex);
     }
+
+    private void StoryEnded() {
+        if (storyFinishedPanel != null) {
+            storyFinishedPanel.SetActive(true);
+        }
+        videoPlayer.Stop();
+    }
+
 }
