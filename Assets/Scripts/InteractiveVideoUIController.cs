@@ -28,6 +28,7 @@ public class InteractiveVideoManager : MonoBehaviour
     private int currentVideoIndex = 0;
     private bool optionsShown = false;
     private bool optionsEnabled = false;
+    private bool storyhasEnded;
 
     void Start() {
         if(storyFinishedPanel != null) {
@@ -41,6 +42,13 @@ public class InteractiveVideoManager : MonoBehaviour
             Debug.LogError("InteractiveVideoManager: The InteractiveVideoTree has no video nodes!");
             return;
         }
+    }
+
+    public void PauseVideo() {
+        videoPlayer.Pause();
+    }
+    public void ResumeVideoPlay() {
+        videoPlayer.Play();
     }
     public void StartVideo() {
         if (optionsPanel != null)
@@ -60,6 +68,9 @@ public class InteractiveVideoManager : MonoBehaviour
         if (optionsShown && !optionsEnabled && progress >= 0.95f) {
             EnableOptionButtons();
             optionsEnabled = true;
+        }
+        if(storyhasEnded && progress >= 0.99f) {
+            StoryEnded();
         }
     }
 
@@ -88,7 +99,7 @@ public class InteractiveVideoManager : MonoBehaviour
         VideoNodeData videoData = videoTree.videoNodes[currentVideoIndex];
         if (videoData.optionChildIndices == null || videoData.optionChildIndices.Count == 0) {
             Debug.Log("InteractiveVideoManager: No options available for video node: " + videoData.title);
-            StoryEnded();
+            storyhasEnded = true;
             return;
         }
         foreach (int optionIndex in videoData.optionChildIndices) {
@@ -110,6 +121,7 @@ public class InteractiveVideoManager : MonoBehaviour
         Button[] buttons = optionsContainer.GetComponentsInChildren<Button>();
         foreach (Button btn in buttons) {
             btn.interactable = true;
+            
         }
     }
 

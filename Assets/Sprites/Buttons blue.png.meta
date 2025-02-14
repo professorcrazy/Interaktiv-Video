@@ -1,0 +1,420 @@
+fileFormatVersion: 2
+guid: 3f386162e3c255c4490b73acb6297d3b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4816653396427954598
+    second: Buttons blue_0
+  - first:
+      213: -3295016846422269458
+    second: Buttons blue_1
+  - first:
+      213: 2037468085711619700
+    second: Buttons blue_2
+  - first:
+      213: -5991878116924009555
+    second: Buttons blue_3
+  - first:
+      213: -7830536781761515247
+    second: Buttons blue_4
+  - first:
+      213: -3334271291954793392
+    second: Buttons blue_5
+  - first:
+      213: -1176416840325342244
+    second: Buttons blue_6
+  - first:
+      213: -6389839701712614913
+    second: Buttons blue_7
+  - first:
+      213: 8748329510291561062
+    second: Buttons blue_8
+  - first:
+      213: 5547613363320426469
+    second: Buttons blue_9
+  - first:
+      213: -380937368505713434
+    second: Buttons blue_10
+  - first:
+      213: -619137819009816110
+    second: Buttons blue_11
+  - first:
+      213: -2052740726798899732
+    second: Buttons blue_12
+  - first:
+      213: 4235264751433955480
+    second: Buttons blue_13
+  - first:
+      213: 5919844600934061660
+    second: Buttons blue_14
+  - first:
+      213: -6619721873321908960
+    second: Buttons blue_15
+  - first:
+      213: -7218835943111700873
+    second: Buttons blue_16
+  - first:
+      213: -2126783251706663099
+    second: Buttons blue_17
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Buttons blue_0
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 701
+        width: 246
+        height: 102
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 17, y: 17, z: 16, w: 19}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a56abb3714fc72db0800000000000000
+      internalID: -4816653396427954598
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttons blue_1
+      rect:
+        serializedVersion: 2
+        x: 391
+        y: 702
+        width: 246
+        height: 99
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 14, y: 14, z: 13, w: 13}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ee1a21cc2afb542d0800000000000000
+      internalID: -3295016846422269458
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttons blue_4
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 530
+        width: 241
+        height: 102
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 13, y: 8, z: 7, w: 19}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1117972f848545390800000000000000
+      internalID: -7830536781761515247
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttons blue_5
+      rect:
+        serializedVersion: 2
+        x: 380
+        y: 530
+        width: 267
+        height: 101
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 11, y: 20, z: 16, w: 16}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 054704afce94ab1d0800000000000000
+      internalID: -3334271291954793392
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttons blue_6
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 354
+        width: 268
+        height: 103
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 16, y: 8, z: 16, w: 9}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cdbde9cdd178cafe0800000000000000
+      internalID: -1176416840325342244
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttons blue_8
+      rect:
+        serializedVersion: 2
+        x: 386
+        y: 352
+        width: 256
+        height: 108
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 28, y: 15, z: 25, w: 16}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66adef6c65f486970800000000000000
+      internalID: 8748329510291561062
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttons blue_12
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 182
+        width: 268
+        height: 102
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 40, y: 14, z: 40, w: 15}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce5ac235f233383e0800000000000000
+      internalID: -2052740726798899732
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttons blue_14
+      rect:
+        serializedVersion: 2
+        x: 393
+        y: 179
+        width: 242
+        height: 103
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 23, y: 14, z: 25, w: 14}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c565034cc43872250800000000000000
+      internalID: 5919844600934061660
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttons blue_16
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 9
+        width: 246
+        height: 102
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 13, y: 14, z: 14, w: 14}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 77e410fe4fa81db90800000000000000
+      internalID: -7218835943111700873
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buttons blue_17
+      rect:
+        serializedVersion: 2
+        x: 391
+        y: 8
+        width: 246
+        height: 102
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 11, y: 11, z: 12, w: 12}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 54f26c796e52c72e0800000000000000
+      internalID: -2126783251706663099
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 633668e108f105740be6cb9fb2c9747d
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Buttons blue_0: -4816653396427954598
+      Buttons blue_1: -3295016846422269458
+      Buttons blue_10: -380937368505713434
+      Buttons blue_11: -619137819009816110
+      Buttons blue_12: -2052740726798899732
+      Buttons blue_14: 5919844600934061660
+      Buttons blue_16: -7218835943111700873
+      Buttons blue_17: -2126783251706663099
+      Buttons blue_2: 2037468085711619700
+      Buttons blue_3: -5991878116924009555
+      Buttons blue_4: -7830536781761515247
+      Buttons blue_5: -3334271291954793392
+      Buttons blue_6: -1176416840325342244
+      Buttons blue_7: -6389839701712614913
+      Buttons blue_8: 8748329510291561062
+      Buttons blue_9: 5547613363320426469
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
